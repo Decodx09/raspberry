@@ -18,8 +18,8 @@ variable "device_hmac" {
 }
 
 source "qemu" "ubuntu-arm" {
-  iso_url              = "https://cdimage.ubuntu.com/ubuntu-server/jammy/daily-live/current/jammy-live-server-arm64.iso"
-  iso_checksum         = "sha256:8842d38688463b369947701768832d2b52b5af471775837ba40866a2c207a48d"
+  iso_url      = "https://cdimage.ubuntu.com/releases/22.04.4/release/ubuntu-22.04.4-server-arm64.iso"
+  iso_checksum = "sha256:1b9550b0f69a5a31a98625d6c5598858e6e5890859556d116b47a95619148386"
   output_directory     = "output"
   format               = "qcow2"
   accelerator          = "none"
