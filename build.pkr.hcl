@@ -1,14 +1,12 @@
-// Packer configuration block
 packer {
   required_plugins {
     arm = {
       version = ">= 1.0.0"
-      source  = "github.com/hashicorp/arm"
+      source  = "github.com/mkaczanowski/packer-builder-arm"
     }
   }
 }
 
-// Define variables that can be passed in from the GitHub Action
 variable "device_name" {
   type    = string
   default = "default-pi"
@@ -19,25 +17,21 @@ variable "device_hmac" {
   default = "default-hmac"
 }
 
-// This block defines the 'builder' - how to create the image
 source "arm" "ubuntu" {
   iso_url         = "https://cdimage.ubuntu.com/releases/22.04/release/ubuntu-22.04.4-preinstalled-server-arm64+raspi.img.xz"
   iso_checksum    = "sha256:56221c720510526e0e2270387588b56064f27f0d1a491f24d9b326372d689b91"
   output_filename = "output/generic-pi-image.img.xz"
 }
 
-// This block defines the 'provisioners' - what to install and configure
 build {
   name    = "raspberry-pi-build"
   sources = ["source.arm.ubuntu"]
 
-  # NEW: File provisioner to upload the update script
   provisioner "file" {
     source      = "update-app.sh"
     destination = "/tmp/update-app.sh"
   }
 
-  # UPDATED: Shell provisioner with blue-green setup
   provisioner "shell" {
     inline = [
       "echo 'Waiting for cloud-init to finish...'",
