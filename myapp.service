@@ -1,0 +1,13 @@
+[Unit]
+Description=My Python Application
+After=network-online.target automon-qr.service
+
+[Service]
+User=appuser
+WorkingDirectory=/opt/app/current
+ExecStart=/usr/bin/python3 /opt/app/current/main.py
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

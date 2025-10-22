@@ -1,0 +1,8 @@
+[Unit]
+Description=Automatically Symlink QR Scanner
+
+[Service]
+ExecStart=/usr/local/bin/automonQR.sh
+
+[Install]
+WantedBy=multi-user.target
