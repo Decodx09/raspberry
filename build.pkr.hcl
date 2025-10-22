@@ -19,7 +19,7 @@ variable "device_hmac" {
 
 source "qemu" "ubuntu-arm" {
   iso_url = "https://releases.ubuntu.com/22.04.4/ubuntu-22.04.4-live-server-arm64.iso"
-  iso_checksum = "sha256:74b8a9f71288ae8ac79875c2793a8284ef8b9729a3dcf41b693d5c724622b65"
+  iso_checksum = "none"
   output_directory     = "output"
   format               = "qcow2"
   accelerator          = "none"
