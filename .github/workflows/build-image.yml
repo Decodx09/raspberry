@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        
+
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
 
@@ -33,4 +33,7 @@ jobs:
 
       - name: Build Packer Image
         id: build
-        run: PACKER_LOG=1 packer build -var="device_name=${{ github.event.inputs.device_name }}" -var="device_hmac=${{ github.event.inputs.device_hmac }}" build.pkr.hcl
+        env:
+          PKR_VAR_device_name: ${{ github.event.inputs.device_name }}
+          PKR_VAR_device_hmac: ${{ github.event.inputs.device_hmac }}
+        run: PACKER_LOG=1 packer build .
