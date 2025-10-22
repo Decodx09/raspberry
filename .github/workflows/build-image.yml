@@ -19,14 +19,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+        
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
 
-      - name: Install QEMU
+      - name: Install QEMU and Firmware
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-system-arm qemu-utils binfmt-support
+          sudo apt-get install -y qemu-system-x86 qemu-system-aarch64 qemu-utils binfmt-support qemu-efi-aarch64
 
       - name: Packer Init
         run: packer init .
