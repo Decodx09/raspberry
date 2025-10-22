@@ -25,7 +25,7 @@ jobs:
           docker run --privileged --name temp-assembler pi-image-assembler
           docker cp temp-assembler:/output/pi-image.img ./pi-image.img
           docker rm temp-assembler
-
+          
       - name: Upload Image Artifact
         uses: actions/upload-artifact@v4
         with:
