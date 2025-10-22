@@ -19,8 +19,8 @@ RUN \
     mkdir -p /opt/app/blue /opt/app/green && \
     ln -sfn /opt/app/blue /opt/app/current && \
     \
-    # Clone the application code (REPLACE WITH YOUR REPO URL)
-    git clone https://github.com/google-gemini/simple-python-app.git /opt/app/blue && \
+    # Clone a real, public placeholder application
+    git clone https://github.com/hiteshkr/Hello-World-Flask.git /opt/app/blue && \
     chown -R appuser:appuser /opt/app && \
     \
     # Install the scripts to their final location
