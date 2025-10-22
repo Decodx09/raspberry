@@ -19,8 +19,8 @@ RUN \
     mkdir -p /opt/app/blue /opt/app/green && \
     ln -sfn /opt/app/blue /opt/app/current && \
     \
-    # Clone a real, public placeholder application
-    git clone https://github.com/hiteshkr/Hello-World-Flask.git /opt/app/blue && \
+    # Clone your application, forcing non-interactive mode
+    GIT_TERMINAL_PROMPT=0 git clone https://github.com/Decodx09/k8s.git /opt/app/blue && \
     chown -R appuser:appuser /opt/app && \
     \
     # Install the scripts to their final location
