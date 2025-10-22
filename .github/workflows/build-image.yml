@@ -22,7 +22,7 @@ jobs:
 
       - name: Extract the .img file from the assembler
         run: |
-          docker create --name temp-assembler pi-image-assembler
+          docker run --name temp-assembler pi-image-assembler
           docker cp temp-assembler:/output/pi-image.img ./pi-image.img
           docker rm temp-assembler
           
