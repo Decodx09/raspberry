@@ -1,0 +1,34 @@
+name: Build Raspberry Pi Image
+
+# This allows you to manually trigger the workflow from the GitHub UI
+on:
+  workflow_dispatch:
+    inputs:
+      device_name:
+        description: 'Device Name for the image'
+        required: true
+        default: 'raspberry-pi-01'
+      device_hmac:
+        description: 'Device HMAC for provisioning'
+        required: true
+        default: 'DEFAULT_HMAC_VALUE'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+
+      - name: Build Packer Image
+        id: build
+        run: |
+          # This command will build our image using a Packer template file.
+          # We will create the 'build.pkr.hcl' file in the next step.
+          packer build -var="device_name=${{ github.event.inputs.device_name }}" \
+                       -var="device_hmac=${{ github.event.inputs.device_hmac }}" \
+                       build.pkr.hcl
