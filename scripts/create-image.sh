@@ -1,22 +1,31 @@
 #!/bin/bash
 set -e
 
-# Create a blank 8GB file
 truncate -s 8G /output/pi-image.img
 
-# Use guestfish to partition, format, and copy files
-guestfish --add /output/pi-image.img <<_EOF_
-run
-part-init /dev/sda mbr
-part-add /dev/sda primary fat32 2048 526335
-part-add /dev/sda primary ext4 526336 -1
-part-set-bootable /dev/sda 1
-mkfs vfat /dev/sda1 label:boot
-mkfs ext4 /dev/sda2 label:root
-mount /dev/sda2 /
-tar-in /rootfs.tar / compress:gzip
-mount /dev/sda1 /boot
-tar-in /bootfs.tar /boot compress:gzip
-_EOF_
+sfdisk /output/pi-image.img << SFDISK_EOF
+label: dos
+,256M,c,*
+,,L,
+SFDISK_EOF
 
-echo "Image creation complete with guestfish!"
+LOOP_DEV=$(sudo losetup -fP --show /output/pi-image.img)
+BOOT_PART="${LOOP_DEV}p1"
+ROOT_PART="${LOOP_DEV}p2"
+
+sudo mkfs.vfat -F32 "$BOOT_PART"
+sudo mkfs.ext4 "$ROOT_PART"
+
+sudo mkdir -p /mnt/root
+sudo mount "$ROOT_PART" /mnt/root
+sudo cp -a /rootfs/. /mnt/root/
+
+sudo mkdir -p /mnt/root/boot/firmware
+sudo mount "$BOOT_PART" /mnt/root/boot/firmware
+sudo cp -a /rpi-firmware/boot/. /mnt/root/boot/firmware/
+
+sudo umount /mnt/root/boot/firmware
+sudo umount /mnt/root
+sudo losetup -d "$LOOP_DEV"
+
+echo "Image creation complete!"
