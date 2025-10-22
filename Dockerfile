@@ -1,23 +1,29 @@
-# Stage 1: Prepare the root filesystem
+# Stage 1: Prepare the root filesystem and create a tarball
 FROM --platform=linux/arm64 ubuntu:22.04 AS rootfs_builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y systemd systemd-sysv git python3-pip adduser
 RUN useradd --create-home --shell /bin/bash appuser
+# Create a compressed archive of the entire filesystem
+RUN tar -czf /rootfs.tar.gz --exclude=/rootfs.tar.gz --exclude=/dev --exclude=/proc --exclude=/sys /
 
-# Stage 2: Assemble the final image
+# Stage 2: Prepare the boot filesystem and create a tarball
+FROM debian:stable-slim AS bootfs_builder
+RUN apt-get update && apt-get install -y git && \
+    git clone --depth=1 https://github.com/raspberrypi/firmware.git /rpi-firmware && \
+    tar -czf /bootfs.tar.gz -C /rpi-firmware/boot .
+
+# Stage 3: Assemble the final image using guestfish
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
-# Install the necessary tools, INCLUDING sudo and ca-certificates
-RUN apt-get update && apt-get install -y --no-install-recommends dosfstools e2fsprogs fdisk util-linux sudo git ca-certificates
+# Install guestfish and its required kernel dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends libguestfs-tools linux-image-generic
 
 # Create the output directory
 RUN mkdir -p /output
 
-# Get the Raspberry Pi bootloader files
-RUN git clone --depth=1 https://github.com/raspberrypi/firmware.git /rpi-firmware
-
-# Copy the prepared root filesystem from the first stage
-COPY --from=rootfs_builder / /rootfs/
+# Copy the prepared tarballs from previous stages
+COPY --from=rootfs_builder /rootfs.tar.gz /
+COPY --from=bootfs_builder /bootfs.tar.gz /
 
 # Copy the assembly script
 COPY scripts/create-image.sh /usr/local/bin/create-image.sh
