@@ -7,8 +7,8 @@ RUN useradd --create-home --shell /bin/bash appuser
 # Stage 2: Assemble the final image
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
-# Install the necessary tools, INCLUDING sudo
-RUN apt-get update && apt-get install -y --no-install-recommends dosfstools e2fsprogs fdisk util-linux sudo git
+# Install the necessary tools, INCLUDING sudo and ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends dosfstools e2fsprogs fdisk util-linux sudo git ca-certificates
 
 # Create the output directory
 RUN mkdir -p /output
