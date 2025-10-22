@@ -1,0 +1,14 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu-server
+    password: "$6$exDY1mhS4/c5G0o.$GS019.2g5P4sPwhm9kplT.j21/842V.SgC21G6zL1v2nEa8Gsn2/jS.S5f2.j23K1b.Y2n.GS2n5.j23"
+    username: ubuntu
+  late-commands:
+    - curtin in-target -- target-path=/target -- apt-get update
+    - curtin in-target -- target-path=/target -- apt-get upgrade -y
+    - curtin in-target -- target-path=/target -- apt-get install -y python3-pip git
+    - curtin in-target -- target-path=/target -- useradd --create-home --shell /bin/bash appuser
+    - curtin in-target -- target-path=/target -- bash -c 'mkdir -p /opt/app/blue /opt/app/green'
+    - curtin in-target -- target-path=/target -- bash -c 'ln -sfn /opt/app/blue /opt/app/current'
