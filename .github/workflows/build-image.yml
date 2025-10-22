@@ -23,14 +23,19 @@ jobs:
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
 
+      # FIX 1: Added step to install the QEMU emulator software
+      - name: Install QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-arm qemu-utils binfmt-support
+
+      # FIX 2: Initializes all Packer files in the directory
       - name: Packer Init
-        run: packer init build.pkr.hcl
+        run: packer init .
 
       - name: Build Packer Image
         id: build
         run: |
-          # This command will build our image using a Packer template file.
-          # We will create the 'build.pkr.hcl' file in the next step.
           packer build -var="device_name=${{ github.event.inputs.device_name }}" \
                        -var="device_hmac=${{ github.event.inputs.device_hmac }}" \
-                       build.pkr.hcl
+                       .
