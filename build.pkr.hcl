@@ -1,8 +1,8 @@
 packer {
   required_plugins {
     arm = {
-      version = ">= 1.1.2" // Updated version
-      source  = "github.com/solo-io/packer-builder-arm" // The new, correct owner and path
+      version = ">= 1.1.2"
+      source  = "github.com/solo-io/builder-arm" // <-- Corrected path
     }
   }
 }
