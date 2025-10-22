@@ -36,6 +36,7 @@ jobs:
       - name: Build Packer Image
         id: build
         run: |
-          packer build -var="device_name=${{ github.event.inputs.device_name }}" \
-                       -var="device_hmac=${{ github.event.inputs.device_hmac }}" \
-                       .
+          PACKER_LOG=1 packer build \
+            -var="device_name=${{ github.event.inputs.device_name }}" \
+            -var="device_hmac=${{ github.event.inputs.device_hmac }}" \
+            .
