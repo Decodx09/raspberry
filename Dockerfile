@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install all base software
 RUN apt-get update && apt-get install -y systemd systemd-sysv git python3-pip curl jq wget software-properties-common adduser
 # Create appuser (this would be in your autoinstall config)
-RUN useradd --create-home --shell /bin/bash appuser
+RUN useradd --create-home --shell /bash/bash appuser
 
 # Stage 2: Prepare the boot filesystem
 FROM debian:stable-slim AS bootfs_builder
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y git && \
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 # Install disk tools
-RUN apt-get update && apt-get install -y dosfstools e2fsprogs fdisk util-linux losetup
+RUN apt-get update && apt-get install -y dosfstools e2fsprogs fdisk util-linux
 
 # Copy the prepared filesystems from previous stages
 COPY --from=rootfs_builder / /rootfs/
