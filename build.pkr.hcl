@@ -18,9 +18,10 @@ variable "device_hmac" {
 }
 
 source "qemu" "ubuntu-arm" {
-  qemu_binary      = "qemu-system-aarch64"
-  iso_url          = "https://releases.ubuntu.com/22.04.4/ubuntu-22.04.4-live-server-arm64.iso"
-  iso_checksum     = "none"
+  qemu_binary  = "qemu-system-aarch64"
+  iso_url      = "https://releases.ubuntu.com/22.04.4/ubuntu-22.04.4-live-server-arm64.iso"
+  iso_checksum = "sha256:e39383626ad5eda35728a417325b1612a674470f3f381f1f2a13063f1266e7b1"
+
   output_directory = "output"
   format           = "qcow2"
   accelerator      = "none"
@@ -28,25 +29,30 @@ source "qemu" "ubuntu-arm" {
   disk_size        = "4G"
   http_directory   = "http"
   boot_wait        = "5s"
+
   boot_command = [
     "<wait><enter><wait><f6><esc><wait><enter>",
     " autoinstall",
     " ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
     "<enter>"
   ]
+
   qemuargs = [
-    ["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"],
-    ["-M", "virt,gic-version=3"]
+    ["-M", "virt,gic-version=3"],
+    ["-cpu", "cortex-a72"],
+    ["-smp", "2"],
+    ["-m", "2048"],
+    # This is the critical fix for running in a non-graphical environment
+    ["-nographic"] 
   ]
+
   ssh_username     = "ubuntu"
   ssh_password     = "ubuntu"
-  ssh_timeout      = "30m"
+  ssh_timeout      = "45m"
   shutdown_command = "sudo shutdown -h now"
 }
 
 build {
   name    = "raspberry-pi-build"
   sources = ["source.qemu.ubuntu-arm"]
-
-  # Full provisioners will be added back here once the build succeeds
 }
