@@ -1,16 +1,7 @@
-name: Build Raspberry Pi Image
+name: Build Raspberry Pi Image (Docker Method)
 
 on:
   workflow_dispatch:
-    inputs:
-      device_name:
-        description: 'Device Name for the image'
-        required: true
-        default: 'raspberry-pi-01'
-      device_hmac:
-        description: 'Device HMAC for provisioning'
-        required: true
-        default: 'DEFAULT_HMAC_VALUE'
 
 jobs:
   build:
@@ -19,21 +10,24 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
 
-      - name: Install QEMU
+      - name: Set up QEMU for Docker
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the image assembler
+        run: docker build -t pi-image-assembler --platform=linux/arm64 .
+
+      - name: Extract the .img file from the assembler
         run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-system-arm qemu-utils binfmt-support
-
-      - name: Packer Init
-        run: packer init .
-
-      - name: Build Packer Image
-        id: build
-        env:
-          PKR_VAR_device_name: ${{ github.event.inputs.device_name }}
-          PKR_VAR_device_hmac: ${{ github.event.inputs.device_hmac }}
-        run: PACKER_LOG=1 packer build .
+          docker create --name temp-assembler pi-image-assembler
+          docker cp temp-assembler:/output/pi-image.img ./pi-image.img
+          docker rm temp-assembler
+          
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: raspberry-pi-image
+          path: ./pi-image.img
