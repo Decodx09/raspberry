@@ -27,7 +27,7 @@ jobs:
       - name: Install QEMU
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-arm qemu-utils binfmt-support
+          sudo apt-get install -y qemu-system-x86 qemu-system-arm qemu-utils binfmt-support
 
       # FIX 2: Initializes all Packer files in the directory
       - name: Packer Init
